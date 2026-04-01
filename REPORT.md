@@ -142,11 +142,43 @@ The skill teaches the agent to:
 
 ## Task 2A — Deployed agent
 
-<!-- Paste a short nanobot startup log excerpt showing the gateway started inside Docker -->
+**Nanobot gateway startup log:**
+
+```
+nanobot-1  | 2026-04-01 13:24:50.880 | INFO     | nanobot.channels.manager:start_all:91 - Starting webchat channel...
+nanobot-1  | 2026-04-01 13:24:50,882 INFO [nanobot_webchat.channel] [channel.py:178] - WebChat relay listening on 127.0.0.1:8766
+nanobot-1  | 2026-04-01 13:24:50,883 INFO [nanobot_webchat.channel] [channel.py:91] - WebChat starting on 0.0.0.0:8765
+nanobot-1  | 2026-04-01 13:24:50,885 INFO [websockets.server] [server.py:341] - server listening on 0.0.0.0:8765
+nanobot-1  | 2026-04-01 13:24:53.366 | INFO     | nanobot.agent.tools.mcp:connect_mcp_servers:246 - MCP server 'lms': connected, 9 tools registered
+nanobot-1  | 2026-04-01 13:24:54.524 | INFO     | nanobot.agent.tools.mcp:connect_mcp_servers:246 - MCP server 'webchat': connected, 1 tools registered
+nanobot-1  | 2026-04-01 13:24:54.524 | INFO     | nanobot.agent.loop:run:280 - Agent loop started
+```
+
+**Verification:**
+- `docker compose --env-file .env.docker.secret ps` — nanobot service is running (Up 9 minutes)
+- WebChat channel listening on port 8765
+- MCP LMS server connected with 9 tools
+- MCP WebChat server connected with 1 tool
+- Agent loop started successfully
 
 ## Task 2B — Web client
 
-<!-- Screenshot of a conversation with the agent in the Flutter web app -->
+**WebSocket connection and agent response:**
+
+```
+nanobot-1  | 2026-04-01 13:30:08,282 INFO [websockets.server] [server.py:531] - connection open
+nanobot-1  | 2026-04-01 13:30:08,283 INFO [nanobot_webchat.channel] [channel.py:140] - WebChat: new connection chat_id=71f1dfcd-614c-446c-83fa-99bdc6db5935
+nanobot-1  | 2026-04-01 13:30:08.286 | INFO     | nanobot.agent.loop:_process_message:425 - Processing message from webchat:71f1dfcd-614c-446c-83fa-99bdc6db5935: hello
+nanobot-1  | 2026-04-01 13:30:12,147 INFO [httpx] [_client.py:1740] - HTTP Request: POST http://qwen-code-api:8080/v1/chat/completions "HTTP/1.1 200 OK"
+nanobot-1  | 2026-04-01 13:30:12.168 | INFO     | nanobot.agent.loop:_process_message:479 - Response to webchat:71f1dfcd-614c-446c-83fa-99bdc6db5935: Hello! 👋 I'm nanobot, your AI assistant. How can I help you today?
+```
+
+**Evidence of full stack working:**
+1. Flutter web client connected via WebSocket (chat_id=71f1dfcd-614c-446c-83fa-99bdc6db5935)
+2. User sent message: "hello"
+3. Nanobot forwarded to LLM (qwen-code-api:8080)
+4. Agent responded: "Hello! 👋 I'm nanobot, your AI assistant. How can I help you today?"
+5. Connection closed gracefully after conversation
 
 ## Task 3A — Structured logging
 
