@@ -27,21 +27,18 @@ Use LMS MCP tools to fetch live course data from the backend.
 If the user asks for scores, pass rates, completion, groups, timeline, or top learners **without specifying a lab**:
 
 1. Call `lms_labs` first to get the list of available labs
-2. Use the `structured-ui` skill to present lab choices to the user
+2. Use `mcp_webchat_ui_message` with `type: "choice"` to present lab options to the user
 3. Wait for the user to select a lab before calling the requested tool
 
 ### Lab choice presentation
 
-- Use each lab's `title` field as the user-facing label
-- Pass the lab `id` as the value when the user makes a selection
-- If multiple labs exist, present them as a choice; if only one exists, proceed directly
-
-### Formatting results
-
-- Format percentages with one decimal place (e.g., `89.1%`)
-- Show counts as integers
-- Present tabular data in a readable format (markdown table or structured list)
-- Keep responses concise — summarize key findings, offer details on request
+- Call `lms_labs` to fetch available labs
+- Build a choice UI where each option uses:
+  - `label`: the lab's `title` field (short, user-friendly name)
+  - `value`: the lab's `id` field (stable identifier for follow-up tool calls)
+- Use `mcp_webchat_ui_message` with `type: "choice"` to send the choice UI
+- Read the `chat_id` from runtime context and pass it so the payload routes to the active WebSocket client
+- Wait for user selection; the selected `value` becomes the `lab` parameter for subsequent tool calls
 
 ### When user asks "what can you do?"
 
